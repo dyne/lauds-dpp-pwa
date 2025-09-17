@@ -4,9 +4,9 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Reflow DPP",
-    "short_name": "Reflow DPP",
-    "description": "Digital Product Passport Reflow",
+    "name": "LAUDS DPP",
+    "short_name": "LAUDS DPP",
+    "description": "Digital Product Passport LAUDS",
     "icons": [
         {
             "src": "/icon-192x192.png",
