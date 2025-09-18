@@ -13,7 +13,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1 className="px-2 my-3 text-2xl font-bold text-center">
-        🤗 to the <a href="https://reflowos.dyne.org" target="_blank" rel="noopener noreferrer" className="text-green-400">LAUDS</a> DPP App
+        🤗 to the <a href="https://lauds.eu/" target="_blank" rel="noopener noreferrer" className="text-green-400">LAUDS</a> DPP App
       </h1>
       <p className="p-4 m-3 text-sm">
         This app is used to generate and verify Digital Product Passports as part of the <a href="https://lauds.eu" target="_blank" rel="noopener noreferrer"> LAUDS project </a>

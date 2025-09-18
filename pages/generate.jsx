@@ -11,31 +11,35 @@ export default function Generate() {
   const onSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
+    
+    const variables = {
+        "id": rid
+    };
+    const query = `query($id:ID!){
+        economicResource(id: $id) {
+            traceDpp
+        }
+    }`;
 
     const data = {
-      "data": {
-        "reflow_data_to_post": {
-          "id": rid,
-          "recurseLimit": 10,
-          "unwind": true
-        },
-        "reflow_endpoint": "https://reflow-demo.dyne.org/api/json/trace",
-        "sawroomEndpoint": "http://195.201.41.35:8008"
-      }
-    }
+      "query": query,
+      "variables": variables
+    };
 
     const options = {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    const url = "https://apiroom.net/api/ReflowDPP/Reflow-create-DPP-and-store-in-sawroom.chain";
+        'Content-Type': 'application/json',
+        'Accept': "application/json",
+        }
+    };
+    const url = "https://zenflows.interfacer-staging.dyne.im/api";
     const res = await fetch(url, options);
     if (res.status === 200) {
       const json = await res.json();
-      const compressed = base45.encode(JSON.stringify(json));
+      console.log(json);
+      const compressed = base45.encode(JSON.stringify(json.data.economicResource.traceDpp[0].node));
       setResult(compressed);
     }
   }
@@ -53,7 +57,7 @@ export default function Generate() {
             label="Valueflows ID"
             floatingLabel
             type="text"
-            placeholder="Please insert a valid ID"
+            placeholder= {rid ==''? "Please insert a valid ID":rid}
             onChange={(e) => { setRid(e.target.value) }}
             required
           />
