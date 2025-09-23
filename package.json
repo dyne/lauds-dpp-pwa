@@ -21,7 +21,7 @@
     "base45": "^2.0.1",
     "eslint": "^9.35.0",
     "eslint-config-next": "^15.5.2",
-    "konsta": "^4.0.1",
+    "konsta": "^5.0.1",
     "local-ssl-proxy": "^2.0.5",
     "next-pwa": "^5.6.0",
     "postcss": "^8.5.6",
