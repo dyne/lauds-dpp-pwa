@@ -5,6 +5,7 @@ import {
 import { useState } from 'react';
 import { QrReader } from 'react-qr-reader';
 import {JSONTree} from "react-json-tree";
+import getTrace from './api/utils'
 
 const format = (data) => {
   const decoded = base45.decode(data).toString('utf8');

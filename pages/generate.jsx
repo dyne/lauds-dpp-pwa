@@ -2,6 +2,7 @@ import base45 from 'base45';
 import { Block, Button, List, ListInput, Navbar, NavbarBackLink, Page, Preloader } from 'konsta/react';
 import { useState } from 'react';
 import QRCode from "react-qr-code";
+import getTrace from './api/utils'
 
 export default function Generate() {
   const [rid, setRid] = useState('');
@@ -11,33 +12,8 @@ export default function Generate() {
   const onSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
-    
-    const variables = {
-        "id": rid
-    };
-    const query = `query($id:ID!){
-        economicResource(id: $id) {
-            traceDpp
-        }
-    }`;
-
-    const data = {
-      "query": query,
-      "variables": variables
-    };
-
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': "application/json",
-        }
-    };
-    const url = "https://zenflows.interfacer-staging.dyne.im/api";
-    const res = await fetch(url, options);
-    if (res.status === 200) {
-      const json = await res.json();
+    const json = await getTrace(rid);
+    if (json != null){
       console.log(json);
       const compressed = base45.encode(JSON.stringify(json.data.economicResource.traceDpp[0].node));
       setResult(compressed);
