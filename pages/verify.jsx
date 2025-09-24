@@ -3,9 +3,10 @@ import {
   Block, Button, Checkbox, Link, List, ListItem, Navbar, NavbarBackLink, Page, Popup, Preloader
 } from 'konsta/react';
 import { useState } from 'react';
-import { QrReader } from 'react-qr-reader';
 import {JSONTree} from "react-json-tree";
 import getTrace from './api/utils'
+import BarcodeScanner from "react-qr-barcode-scanner";
+
 
 const format = (data) => {
   const decoded = base45.decode(data).toString('utf8');
@@ -114,21 +115,20 @@ export default function Verify() {
       </List>
 
       {!happy && <Block className="text-center">
-        <QrReader
-          constraints={{
-            facingMode: "environment"
-          }}
+        <BarcodeScanner
+          width={500}
+          height={500}
           facingMode="environment"
-          onResult={async (result, error) => {
-            if (!!result) {
-              verifyLocalDpp(result);
-            }
-
-            if (!!error) {
-              console.info(error);
+          onUpdate={(err, result) => {
+            if (err){
+              console.error(err)
+            }else if (result) {
+              setDpp(result.text);
+              // verifyLocalDpp(data);
+            }else {
+              setDpp("Not Found");
             }
           }}
-          style={{ width: '100%' }}
         />
         <Preloader />
       </Block>}

@@ -1,0 +1,23 @@
+// Test of QR code reader available at https://github.com/adamalfredsson/react-zxing
+import React, { useState } from 'react';
+import { Block, Button, List, ListInput, Navbar, NavbarBackLink, Page, Preloader } from 'konsta/react';
+import { useZxing } from "react-zxing";
+
+export default function Test(){
+  const [result, setResult] = useState("");
+  const { ref } = useZxing({
+    onDecodeResult(result) {
+      setResult(result.getText());
+    },
+  });
+
+  return (
+    <Page>
+      <video ref={ref} />
+      <p>
+        <span>Last result:</span>
+        <span>{result}</span>
+      </p>
+    </Page>
+  );
+};
