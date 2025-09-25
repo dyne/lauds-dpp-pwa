@@ -1,15 +1,16 @@
+// Currently Not Working
 // Test of QR code reader available at https://github.com/KhaosArbiter/modern-react-qr-reader
 import React, { Component } from 'react'
 import { Block, Button, List, ListInput, Navbar, NavbarBackLink, Page, Preloader } from 'konsta/react';
 import QrReader from 'modern-react-qr-reader'
+// import { useState } from 'react';
 
 class Test extends Component {
   constructor(props) {
         super(props);
+        // const [state, this.setState] = useState('No result');
 
-        this.state = {
-            result: 'No result'
-        }
+        this.state = {result: 'No result'};
 
         this.handleError = this.handleError.bind(this);
         this.handleScan = this.handleScan.bind(this);
@@ -17,8 +18,7 @@ class Test extends Component {
 
   handleScan = data => {
     if (data) {
-      this.state.result = data;
-        console.log(this.state.result);
+        console.log(data);
         this.setState({result: data});
     }
   }

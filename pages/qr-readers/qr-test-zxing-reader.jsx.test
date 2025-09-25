@@ -1,3 +1,4 @@
+// Currently Not Working
 // Test of QR code reader available at https://github.com/adamalfredsson/react-zxing
 import React, { useState } from 'react';
 import { Block, Button, List, ListInput, Navbar, NavbarBackLink, Page, Preloader } from 'konsta/react';

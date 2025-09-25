@@ -9,86 +9,32 @@ import BarcodeScanner from "react-qr-barcode-scanner";
 
 
 const format = (data) => {
-  const decoded = base45.decode(data).toString('utf8');
-  return JSON.stringify(JSON.parse(decoded), null, 2);
+  // This function need to extract the resource id from the url in the QR code
+  // At the moment it returns a fixed id
+  return '06CH9N09XX97B24A1AJ6ZKCWK0';
 }
 
 export default function Verify() {
   const [dpp, setDpp] = useState('No result');
   const [verification, setVerification] = useState('Not verified yet');
   const [happy, setHappy] = useState(false);
-  const [block, setBlock] = useState();
-  const [details, setDetails] = useState();
   const [timestamp, setTimestamp] = useState('');
-  const [popupOpened, setPopupOpened] = useState(false);
-  const [popupTitle, setPopupTitle] = useState('DPP details');
+
 
 
   const verifyLocalDpp = async (result) => {
-    const decodedDpp = format(result.text);
-    setDpp(decodedDpp);
-    const options = {
-      method: 'POST',
-      body: decodedDpp,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    const resp = await fetch('/api/verify', options);
+    setDpp(result);
+    const rid = format(result.text);
+    
+    const json = await getTrace(rid);
 
-    if (resp.status === 200) {
-      const json = await resp.json();
-      setVerification(JSON.stringify(json.output[0]).replace(/_/g, ' '));
-      setBlock(json.DPP.sawroom_entry);
+    if (json !== null) {
+      setVerification(JSON.stringify(json.data.economicResource.traceDpp[0].node));
       setHappy(true);
       setTimestamp(new Date().toTimeString().split(' ')[0]);
     } else {
       setVerification('🤯 Verification failed');
     }
-  }
-  const retrieveDetails = async () => {
-    const options = {
-      method: 'POST',
-      body: JSON.stringify({ data: { sawroom_entry: block } }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    const url = "https://apiroom.net/api/ReflowDPP/Sawroom-Read-data-from-the-blockchain";
-    const res = await fetch(url, options);
-    return await res.json();
-  }
-
-  const retrieveValueFlows = async (vid) => {
-    const options = {
-      method: 'POST',
-      body: JSON.stringify({
-        "id": vid,
-        "recurseLimit": 10,
-        "unwind": true
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    const url = "https://reflow-demo.dyne.org/api/json/trace";
-    const res = await fetch(url, options);
-    return await res.json();
-  }
-
-  const getBlockchainDetails = async (result) => {
-    const json = await retrieveDetails();
-    setDetails(json);
-    setPopupTitle("DPP Details");
-    setPopupOpened(true);
-  }
-
-  const getValueFlows = async (result) => {
-    const details = await retrieveDetails(result);
-    const valueFlows = await retrieveValueFlows(details.sawroom.id);
-    setDetails(valueFlows);
-    setPopupTitle("Value Flows");
-    setPopupOpened(true);
   }
 
   return (
@@ -121,53 +67,41 @@ export default function Verify() {
           facingMode="environment"
           onUpdate={(err, result) => {
             if (err){
-              console.error(err)
+              if (typeof(err) == 'object' && 
+                  err.name == 'NotFoundException' && 
+                  err.message == 'No MultiFormat Readers were able to detect the code.'){
+                // Ignore
+              }else{
+                console.error(err);
+              }
+              
             }else if (result) {
-              setDpp(result.text);
-              // verifyLocalDpp(data);
+              console.info("Result is " + result);
+              // setDpp(result.text);
+              verifyLocalDpp(result.text);
             }else {
               setDpp("Not Found");
             }
           }}
         />
         <Preloader />
-      </Block>}
+      </Block>
+      }
 
       <Block>
-        {dpp && <pre className="overflow-scroll w-100">{dpp}</pre>}
+        {dpp && <pre className="overflow-scroll w-200">{dpp}</pre>}
         {happy &&
           <>
-            <Button outline onClick={getBlockchainDetails} className="mt-8">
+            <Button outline className="mt-8">
               BLOCKCHAIN DETAILS
             </Button>
-            <Button outline onClick={getValueFlows} className="mt-8">
+            <Button outline className="mt-8">
               VIEW VALUEFLOWS
             </Button>
           </>
         }
       </Block>
 
-
-      <Popup opened={popupOpened} onBackdropClick={() => setPopupOpened(false)}>
-        <Page>
-          <Navbar
-            title={popupTitle}
-            right={
-              <Link navbar onClick={() => setPopupOpened(false)}>
-                Close
-              </Link>
-            }
-          />
-          <Block className="space-y-4">
-            {
-              details && <>
-
-                <pre className="overflow-scroll w-100 h-100"><JSONTree data={details} />;</pre>
-              </>
-            }
-          </Block>
-        </Page>
-      </Popup>
     </Page >
   );
 }
